@@ -4,14 +4,15 @@ const jwt = require("jsonwebtoken");
 const validator = asyncHandler(async (req, res, next) => { 
   let token;
   let autHeader = req.headers.authorization || req.headers.Authorization; 
-  if (autHeader && autHeader.startsWith("Bearer")) { 
-    token = autHeader.split(" ")[1];
+  if (autHeader) { 
+    token = autHeader;
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
       if (err) {
         res.status(401);
         throw new Error("Unauthorized user");
       }
       req.user = decode.user;  
+      next();
     }); 
   } else {
     res.status(401);
